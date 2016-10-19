@@ -1,0 +1,3 @@
+package: dhash
+import:
+- package: github.com/disintegration/imaging
