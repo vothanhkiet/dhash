@@ -3,13 +3,13 @@ package dhash
 import (
 	"github.com/disintegration/imaging"
 	"image"
-	"os"
 	"strings"
+	"io"
 )
 
 func calculateHash(original image.Image, size int) (string, error) {
 	// Downscale to (size+1)x(size) and convert it to grayscale
-	img := imaging.Grayscale(imaging.Resize(original, size+1, size, imaging.Lanczos))
+	img := imaging.Grayscale(imaging.Resize(original, size + 1, size, imaging.Lanczos))
 
 	// Create the intensity map
 	intensities := make([]string, 0, size)
@@ -21,7 +21,7 @@ func calculateHash(original image.Image, size int) (string, error) {
 		// For each pixel of the line until the penultimate
 		for x := 0; x < size; x++ {
 			a := intensityOfColor(img.At(x, y))
-			b := intensityOfColor(img.At(x+1, y))
+			b := intensityOfColor(img.At(x + 1, y))
 
 			var diff byte
 
@@ -40,7 +40,7 @@ func calculateHash(original image.Image, size int) (string, error) {
 	return strings.Join(intensities, ""), nil
 }
 
-func DhashFile(file *os.File, size int) (string, error) {
+func DhashFromReader(file io.Reader, size int) (string, error) {
 	original, err := imaging.Decode(file)
 	// Return if could not read the image
 	if err != nil {
