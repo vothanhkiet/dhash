@@ -40,7 +40,7 @@ func calculateHash(original image.Image, size int) (string, error) {
 	return strings.Join(intensities, ""), nil
 }
 
-func DhashFile(file os.File, size int) (string, error) {
+func DhashFile(file *os.File, size int) (string, error) {
 	original, err := imaging.Decode(file)
 	// Return if could not read the image
 	if err != nil {
