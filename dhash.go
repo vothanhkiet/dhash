@@ -2,21 +2,12 @@ package dhash
 
 import (
 	"github.com/disintegration/imaging"
+	"image"
+	"os"
 	"strings"
 )
 
-// Runs a difference hash algorithm on the image
-// and returns a hash string and a error if there
-// was one during the function execution.
-func Dhash(path string, size int) (string, error) {
-	// Read the image
-	original, err := imaging.Open(path)
-
-	// Return if could not read the image
-	if err != nil {
-		return "", err
-	}
-
+func calculateHash(original image.Image, size int) (string, error) {
 	// Downscale to (size+1)x(size) and convert it to grayscale
 	img := imaging.Grayscale(imaging.Resize(original, size+1, size, imaging.Lanczos))
 
@@ -47,4 +38,29 @@ func Dhash(path string, size int) (string, error) {
 	}
 
 	return strings.Join(intensities, ""), nil
+}
+
+func DhashFile(file os.File, size int) (string, error) {
+	original, err := imaging.Decode(file)
+	// Return if could not read the image
+	if err != nil {
+		return "", err
+	}
+
+	return calculateHash(original, size)
+}
+
+// Runs a difference hash algorithm on the image
+// and returns a hash string and a error if there
+// was one during the function execution.
+func Dhash(path string, size int) (string, error) {
+	// Read the image
+	original, err := imaging.Open(path)
+
+	// Return if could not read the image
+	if err != nil {
+		return "", err
+	}
+
+	return calculateHash(original, size)
 }
